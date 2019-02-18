@@ -15,10 +15,10 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private RecyclerView recycler;
-    private RVAContacts adapter;
+    private RecyclerView        recycler;
+    private RVAContacts         adapter;
     private LinearLayoutManager layoutManager;
-    private boolean isContactsLoading = false;
+    private boolean             isContactsLoading = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,11 +37,11 @@ public class MainActivity extends AppCompatActivity {
         });
         recycler.setAdapter(adapter);
         recycler.setLayoutManager(layoutManager);
-        if (recycler.getItemAnimator() != null) {
+        /*if (recycler.getItemAnimator() != null) {
             recycler.getItemAnimator().setRemoveDuration(0);
             recycler.getItemAnimator().setChangeDuration(0);
-        }
-        recycler.setOnScrollListener(new RecyclerView.OnScrollListener() {
+        }*/
+        recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(
                     @NonNull RecyclerView recyclerView,
@@ -100,7 +100,9 @@ public class MainActivity extends AppCompatActivity {
 
     public static boolean isNetworkAvailable() {
         final ConnectivityManager
-                connectivityManager = ((ConnectivityManager) App.getContext().getSystemService(Context.CONNECTIVITY_SERVICE));
-        return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
+                connectivityManager = ((ConnectivityManager) App.getContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE));
+        return connectivityManager != null && connectivityManager.getActiveNetworkInfo() != null &&
+               connectivityManager.getActiveNetworkInfo().isConnected();
     }
 }
