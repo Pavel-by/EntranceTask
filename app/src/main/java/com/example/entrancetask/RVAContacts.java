@@ -1,22 +1,16 @@
 package com.example.entrancetask;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class RVAContacts extends RecyclerView.Adapter<RVAContacts.ContactViewHolder> {
 
@@ -36,7 +30,6 @@ public class RVAContacts extends RecyclerView.Adapter<RVAContacts.ContactViewHol
             for (int i = 0; i < contacts.size(); i++) {
                 if (con.equals(contacts.get(i))) {
                     notifyItemChanged(i);
-                    Log.e("RVAContacts", "Changed on " + i);
                     break;
                 }
             }

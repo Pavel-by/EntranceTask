@@ -1,22 +1,17 @@
 package com.example.entrancetask;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,10 +52,6 @@ public class WebHelper {
         }
 
         @Override
-        protected void onPreExecute() {
-        }
-
-        @Override
         protected Bitmap doInBackground(String... strings) {
             if (strings.length == 0) cancel(true);
             try {
@@ -97,10 +88,6 @@ public class WebHelper {
         ContactsDownloadTask(ContactsDownloadListener listener) {
             this.listener = listener;
             if (!MainActivity.isOnline()) cancel(true);
-        }
-
-        @Override
-        protected void onPreExecute() {
         }
 
         @Override

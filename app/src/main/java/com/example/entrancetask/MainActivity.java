@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 
 import java.io.IOException;
@@ -37,10 +36,6 @@ public class MainActivity extends AppCompatActivity {
         });
         recycler.setAdapter(adapter);
         recycler.setLayoutManager(layoutManager);
-        /*if (recycler.getItemAnimator() != null) {
-            recycler.getItemAnimator().setRemoveDuration(0);
-            recycler.getItemAnimator().setChangeDuration(0);
-        }*/
         recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(
