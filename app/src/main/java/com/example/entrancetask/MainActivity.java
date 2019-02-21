@@ -49,6 +49,10 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        recycler.setHasFixedSize(true);
+        recycler.setItemViewCacheSize(20);
+        recycler.setDrawingCacheEnabled(true);
+        recycler.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         loadContacts();
     }
 

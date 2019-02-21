@@ -2,11 +2,16 @@ package com.example.entrancetask;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Contact {
+public class Contact implements Target {
 
     public interface OnChangeListener {
         void OnChange(Contact con);
@@ -15,35 +20,19 @@ public class Contact {
     public static final int GENDER_MALE   = 1;
     public static final int GENDER_FEMALE = 2;
 
-    private Bitmap                          icon;
-    private String                          iconURL;
-    private int                             gender;
-    private String                          firstName = "";
-    private String                          lastName = "";
-    private String                          fullName = "";
-    private List<OnChangeListener>          listeners = new ArrayList<>();
-    private WebHelper.ImageDownloadListener imageDownloadListener = new WebHelper.ImageDownloadListener() {
-        @Override
-        public void onLoadingComplete(Bitmap bitmap) {
-            if (bitmap != icon) {
-                icon = bitmap;
-                notifyChanged();
-            }
-            isUpdatingImage = false;
-        }
+    private Drawable         icon;
+    private String                 iconURL;
+    private int                    gender;
+    private String                 firstName = "";
+    private String                 lastName = "";
+    private String                 fullName = "";
+    private List<OnChangeListener> listeners = new ArrayList<>();
 
-        @Override
-        public void onLoadingFailed() {
-            isUpdatingImage = false;
-        }
-    };
-    private boolean isUpdatingImage = false;
-
-    public Bitmap getIcon() {
+    public Drawable getIcon() {
         return icon;
     }
 
-    public void setIcon(Bitmap icon) {
+    public void setIcon(BitmapDrawable icon) {
         this.icon = icon;
         notifyChanged();
     }
@@ -105,10 +94,25 @@ public class Contact {
         this.listeners.remove(listener);
     }
 
-    public void updateIconBitmap() {
-        if (isUpdatingImage) return;
-        isUpdatingImage = true;
-        WebHelper.getBitmapFromURL(iconURL, imageDownloadListener);
+    @Override
+    public void onBitmapLoaded(
+            Bitmap bitmap,
+            Picasso.LoadedFrom from
+    )
+    {
+        icon = new BitmapDrawable(App.getContext().getResources(), bitmap);
+        notifyChanged();
+    }
+
+    @Override
+    public void onBitmapFailed(Drawable errorDrawable) {
+        icon = errorDrawable;
+        notifyChanged();
+    }
+
+    @Override
+    public void onPrepareLoad(Drawable placeHolderDrawable) {
+        icon = placeHolderDrawable;
     }
 
     private void updateFullName() {

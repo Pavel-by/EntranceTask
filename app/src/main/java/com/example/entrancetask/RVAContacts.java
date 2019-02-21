@@ -1,13 +1,17 @@
 package com.example.entrancetask;
 
 import android.app.Activity;
+import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,13 +27,24 @@ public class RVAContacts extends RecyclerView.Adapter<RVAContacts.ContactViewHol
     private String messageText = null;
     private String buttonText = null;
     private View.OnClickListener buttonListener = null;
+    private AvatarTransformer manTransformer;
+    private AvatarTransformer womenTransformer;
+    private RecyclerView recyclerView;
 
     private Contact.OnChangeListener contactListener = new Contact.OnChangeListener() {
         @Override
         public void OnChange(Contact con) {
             for (int i = 0; i < contacts.size(); i++) {
                 if (con.equals(contacts.get(i))) {
-                    notifyItemChanged(i);
+                    if (recyclerView != null) {
+                        final int index = i;
+                        recyclerView.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                notifyItemChanged(index);
+                            }
+                        });
+                    }
                     break;
                 }
             }
@@ -39,6 +54,13 @@ public class RVAContacts extends RecyclerView.Adapter<RVAContacts.ContactViewHol
     public RVAContacts(Activity activity) {
         super();
         this.activity = activity;
+        this.manTransformer = new AvatarTransformer(BitmapFactory.decodeResource(activity.getResources(), R.drawable.mask_star));
+        this.womenTransformer = new AvatarTransformer(BitmapFactory.decodeResource(activity.getResources(), R.drawable.mask_heart));
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+        this.recyclerView = recyclerView;
     }
 
     @Override
@@ -72,9 +94,15 @@ public class RVAContacts extends RecyclerView.Adapter<RVAContacts.ContactViewHol
         switch (getItemViewType(i)) {
             case CONTACT: {
                 Contact con = contacts.get(i);
-                holder.image.setGender(con.getGender());
-                holder.image.setImageBitmap(con.getIcon());
-                if (con.getIcon() == null) con.updateIconBitmap();
+                if (con.getIcon() == null) {
+                    Picasso.with(activity)
+                            .load(con.getIconURL())
+                            .placeholder(R.drawable.user_loading)
+                            .error(R.drawable.error)
+                            .transform(con.getGender() == Contact.GENDER_MALE ? manTransformer : womenTransformer)
+                            .into(con);
+                }
+                holder.image.setImageDrawable(con.getIcon());
                 holder.text.setText(con.getFullName());
                 break;
             }
@@ -104,13 +132,18 @@ public class RVAContacts extends RecyclerView.Adapter<RVAContacts.ContactViewHol
         return contacts.size() + 1;
     }
 
-    public void addAll(Collection<Contact> contacts) {
+    public void addAll(final Collection<Contact> contacts) {
         for (Contact con : contacts) {
             con.addListener(contactListener);
         }
         this.contacts.addAll(contacts);
         if (contacts.size() == this.contacts.size()) notifyDataSetChanged();
-        else notifyItemRangeInserted(this.contacts.size() - contacts.size(), contacts.size());
+        else if (recyclerView != null) recyclerView.post(new Runnable() {
+            @Override
+            public void run() {
+                notifyItemRangeInserted(RVAContacts.this.contacts.size() - contacts.size(), contacts.size());
+            }
+        });
     }
 
     public void clear() {
@@ -124,7 +157,12 @@ public class RVAContacts extends RecyclerView.Adapter<RVAContacts.ContactViewHol
     public void setLoadingEnabled(boolean isLoadingEnabled) {
         if (this.isLoadingEnabled != isLoadingEnabled){
             this.isLoadingEnabled = isLoadingEnabled;
-            notifyItemChanged(contacts.size());
+            if (recyclerView != null) recyclerView.post(new Runnable() {
+                @Override
+                public void run() {
+                    notifyItemChanged(contacts.size());
+                }
+            });
         }
     }
 
@@ -141,7 +179,12 @@ public class RVAContacts extends RecyclerView.Adapter<RVAContacts.ContactViewHol
                           || messageText != null && !messageText.equals(this.messageText))
         {
             this.messageText = messageText;
-            notifyItemChanged(contacts.size());
+            if (recyclerView != null) recyclerView.post(new Runnable() {
+                @Override
+                public void run() {
+                    notifyItemChanged(contacts.size());
+                }
+            });
         }
     }
 
@@ -154,7 +197,12 @@ public class RVAContacts extends RecyclerView.Adapter<RVAContacts.ContactViewHol
                           || buttonText != null && !buttonText.equals(this.buttonText))
         {
             this.buttonText = buttonText;
-            notifyItemChanged(contacts.size());
+            if (recyclerView != null) recyclerView.post(new Runnable() {
+                @Override
+                public void run() {
+                    notifyItemChanged(contacts.size());
+                }
+            });
         }
     }
 
@@ -165,14 +213,19 @@ public class RVAContacts extends RecyclerView.Adapter<RVAContacts.ContactViewHol
     public void setButtonListener(View.OnClickListener buttonListener) {
         if (buttonListener != this.buttonListener) {
             this.buttonListener = buttonListener;
-            notifyItemChanged(contacts.size());
+            if (recyclerView != null) recyclerView.post(new Runnable() {
+                @Override
+                public void run() {
+                    notifyItemChanged(contacts.size());
+                }
+            });
         }
     }
 
     public static class ContactViewHolder extends RecyclerView.ViewHolder {
 
-        private AvatarImageView image;
-        private TextView text;
+        private ImageView image;
+        private TextView  text;
 
         private ProgressBar infoProgressBar;
         private TextView    infoMessage;

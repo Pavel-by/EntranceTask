@@ -19,67 +19,15 @@ import java.util.List;
 public class WebHelper {
     public static String contactsURL = "https://randomuser.me/api/?results=30";
 
-    public interface ImageDownloadListener {
-        void onLoadingComplete(Bitmap bitmap);
-
-        void onLoadingFailed();
-    }
-
     public interface ContactsDownloadListener {
         void onLoadingComplete(List<Contact> contacts);
 
         void onLoadingFailed();
     }
 
-    public static void getBitmapFromURL(
-            String src,
-            ImageDownloadListener listener
-    )
-    {
-        new ImageDownloadTask(listener).execute(src);
-    }
-
     public static void loadContacts(ContactsDownloadListener listener) {
         new ContactsDownloadTask(listener).execute(contactsURL);
     }
-
-    private static class ImageDownloadTask extends AsyncTask<String, Void, Bitmap> {
-        private ImageDownloadListener listener;
-
-        ImageDownloadTask(ImageDownloadListener listener) {
-            this.listener = listener;
-            if (!MainActivity.isOnline()) cancel(true);
-        }
-
-        @Override
-        protected Bitmap doInBackground(String... strings) {
-            if (strings.length == 0) cancel(true);
-            try {
-                java.net.URL url = new java.net.URL(strings[0]);
-                HttpURLConnection connection = (HttpURLConnection) url
-                        .openConnection();
-                connection.setDoInput(true);
-                connection.connect();
-                InputStream input = connection.getInputStream();
-                return BitmapFactory.decodeStream(input);
-            } catch (IOException e) {
-                e.printStackTrace();
-                cancel(true);
-                return null;
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            listener.onLoadingFailed();
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            listener.onLoadingComplete(bitmap);
-        }
-    }
-
 
     private static class ContactsDownloadTask extends AsyncTask<String, Void, List<Contact>> {
 

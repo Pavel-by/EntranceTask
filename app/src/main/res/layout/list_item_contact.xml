@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:gravity="center_vertical|start">
-    <com.example.entrancetask.AvatarImageView
+    <ImageView
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginStart="16dp"
