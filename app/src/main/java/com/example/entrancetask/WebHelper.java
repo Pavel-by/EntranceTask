@@ -35,7 +35,6 @@ public class WebHelper {
 
         ContactsDownloadTask(ContactsDownloadListener listener) {
             this.listener = listener;
-            if (!MainActivity.isOnline()) cancel(true);
         }
 
         @Override

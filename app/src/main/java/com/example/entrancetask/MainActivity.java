@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
             )
             {
                 if (layoutManager.findLastVisibleItemPosition() >= adapter.getItemCount() - 2) {
-                    loadContacts();
+                    if (adapter.isLoadingEnabled()) loadContacts();
                 }
             }
         });
@@ -58,11 +58,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadContacts() {
         if (isContactsLoading) return;
-        if (!isOnline()) {
-            adapter.setLoadingEnabled(false);
-            adapter.setMessageText("Отсутствует подключение к интернету");
-            return;
-        }
         adapter.setLoadingEnabled(true);
         isContactsLoading = true;
         WebHelper.loadContacts(new WebHelper.ContactsDownloadListener() {
@@ -79,29 +74,5 @@ public class MainActivity extends AppCompatActivity {
                 isContactsLoading = false;
             }
         });
-    }
-
-    public static boolean isOnline() {
-        if (!isNetworkAvailable()) return false;
-        Runtime runtime = Runtime.getRuntime();
-        try {
-            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
-            int exitValue = ipProcess.waitFor();
-            return exitValue == 0;
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        return false;
-    }
-
-    public static boolean isNetworkAvailable() {
-        final ConnectivityManager
-                connectivityManager = ((ConnectivityManager) App.getContext()
-                .getSystemService(Context.CONNECTIVITY_SERVICE));
-        return connectivityManager != null && connectivityManager.getActiveNetworkInfo() != null &&
-               connectivityManager.getActiveNetworkInfo().isConnected();
     }
 }
